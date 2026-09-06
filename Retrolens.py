@@ -277,9 +277,15 @@ def main() -> None:
     processor = PortalProcessor(cfg)
     cap = cv2.VideoCapture(cfg.cam_index)
 
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
     if not cap.isOpened():
         print("[ERROR] Kamera tidak terdeteksi!")
         return
+
+    is_fullscreen = False
+    cv2.namedWindow("RetroLens Engine", cv2.WINDOW_NORMAL)
 
     while True:
         ret, frame = cap.read()
@@ -301,6 +307,14 @@ def main() -> None:
             processor.cycle_filter(-1)
         elif key == ord("s"):
             cv2.imwrite(f"cap_{int(time.time())}.png", out_frame)
+        elif key == ord("f"):
+            is_fullscreen = not is_fullscreen
+            if is_fullscreen:
+                cv2.setWindowProperty("RetroLens Engine", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            else:
+                cv2.setWindowProperty("RetroLens Engine", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
+                cv2.resizeWindow("RetroLens Engine", 960, 540)
+                cv2.moveWindow("RetroLens Engine", 100, 100)
 
     cap.release()
     cv2.destroyAllWindows()
